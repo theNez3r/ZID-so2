@@ -1,6 +1,6 @@
 # Standoff 2 Zygisk dumper.
 **Данный репозиторий является форком проекта Perfare/Zygisk-Il2CppDumper, модуля дампа различных Unity игр.**
-
+- **Powered by t.me/nez3rall и t.me/nzrhvh and original author.**
 Инструкция по использованию:
 
 Требования:
