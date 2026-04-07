@@ -1,21 +1,23 @@
-# Zygisk-Il2CppDumper
-Il2CppDumper with Zygisk, dump il2cpp data at runtime, can bypass protection, encryption and obfuscation.
+# Standoff 2 Zygisk dumper.
+**Данный репозиторий является форком проекта Perfare/Zygisk-Il2CppDumper, модуля дампа различных Unity игр.**
 
-中文说明请戳[这里](README.zh-CN.md)
+Инструкция по использованию:
+Требования:
+- Magisk (v24+) или KernelSU\Next (с Zygisk Next).
+- Установленный Standoff 2
+- MT Manager или другой проводник имеющий доступ к системным папкам
+  
+Установка:
+ - Установите модуль в вашем Root менеджере.
 
-## How to use
-1. Install [Magisk](https://github.com/topjohnwu/Magisk) v24 or later and enable Zygisk
-2. Build module
-   - GitHub Actions
-      1. Fork this repo
-      2. Go to the **Actions** tab in your forked repo
-      3. In the left sidebar, click the **Build** workflow.
-      4. Above the list of workflow runs, select **Run workflow**
-      5. Input the game package name and click **Run workflow**
-      6. Wait for the action to complete and download the artifact
-   - Android Studio
-      1. Download the source code
-      2. Edit `game.h`, modify `GamePackageName` to the game package name
-      3. Use Android Studio to run the gradle task `:module:assembleRelease` to compile, the zip package will be generated in the `out` folder
-3. Install module in Magisk
-4. Start the game, `dump.cs` will be generated in the `/data/data/GamePackageName/files/` directory
+4. Получение дампа
+Запустите игру Standoff 2.
+Подождите около 10-20 секунд (время необходимо для инициализации Il2Cpp и расшифровки metadata игры).
+
+Дамп и т.д будет автоматически сохранен по следующему пути:
+/data/data/com.axlebolt.standoff2/files/dump.cs
+
+Вместе с текстовым файлом в этой же папке могут быть сгенерированы восстановленные .so и .dat файлы. (libil2cpp.so и global-metadata.dat)
+
+Кредиты (англицизм.)\Credits:
+Автор модуля — Perfare.
