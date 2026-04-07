@@ -1,27 +1,40 @@
 name: Build
 on:
   workflow_dispatch:
-      inputs:
-        package_name:
-          description: "Package name of the game:"
-          required: true
+    inputs:
+      package_name:
+        description: "Package name of the game:"
+        required: true
+        default: "com.axlebolt.standoff2"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 11
-        cache: gradle
-    - run: |
-        chmod +x ./gradlew
-        sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
-        sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
-        ./gradlew :module:assembleRelease
-    - uses: actions/upload-artifact@v3
-      with:
-        name: zygisk-il2cppdumper
-        path: out/magisk_module_release/
+      # Обновлено до v4 (поддержка Node.js 20)
+      - uses: actions/checkout@v4
+
+      # Обновлено до v4 (стабильнее работа с кэшем)
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Для современных Gradle лучше использовать Java 17
+          cache: 'gradle'
+
+      - name: Prepare and Build
+        run: |
+          chmod +x ./gradlew
+          # Вставляем имя пакета в описание модуля
+          sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
+          # Заменяем дефолтный пакет на введенный пользователем в исходниках C++
+          sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
+          # Запуск сборки модуля
+          ./gradlew :module:assembleRelease
+
+      # КРИТИЧЕСКОЕ ОБНОВЛЕНИЕ: v3 -> v4
+      - name: Upload Magisk Module
+        uses: actions/upload-artifact@v4
+        with:
+          name: zygisk-il2cppdumper-${{ github.event.inputs.package_name }}
+          path: out/magisk_module_release/
+          if-no-files-found: error # Поможет сразу понять, если путь к файлам неверный
