@@ -18,21 +18,37 @@
 #include <array>
 
 void hack_start(const char *game_data_dir) {
+    // Если дамп уже запущен в другом потоке — выходим
+    if (is_dumping) return;
+    is_dumping = true;
+
+    LOGI("Dumper thread started. Waiting for libil2cpp.so...");
+
     bool load = false;
-    for (int i = 0; i < 10; i++) {
+    int max_attempts = 120; // Будем проверять 120 раз (максимум 120 секунд)
+
+    for (int i = 0; i < max_attempts; i++) {
         void *handle = xdl_open("libil2cpp.so", 0);
+        
         if (handle) {
+            LOGI("Success! libil2cpp.so found at second %d", i);
             load = true;
             il2cpp_api_init(handle);
             il2cpp_dump(game_data_dir);
-            break;
+            break; // Выходим из цикла, так как дамп завершен
         } else {
-            LOGI("Sleep 30");
-            sleep(30);
+            // Пишем в лог только каждые 10 секунд, чтобы не было спама в консоли
+            if (i > 0 && i % 10 == 0) {
+                LOGI("Still waiting for libil2cpp.so... (%d/%d seconds)", i, max_attempts);
+            }
+            sleep(1); // Спим ровно 1 секунду и проверяем снова
         }
     }
+    
     if (!load) {
-        LOGI("libil2cpp.so not found in thread %d", gettid());
+        LOGI("Critical Error: libil2cpp.so not found after %d seconds.", max_attempts);
+    } else {
+        LOGI("Dump successfully finished in directory: %s", game_data_dir);
     }
 }
 
