@@ -27,7 +27,7 @@ void hack_start(const char *game_data_dir) {
             il2cpp_dump(game_data_dir);
             break;
         } else {
-            LOGI("Sleep 30", gettid());
+            LOGI("Sleep 30");
             sleep(30);
         }
     }
